@@ -8,6 +8,8 @@ public class MusicManager : MonoBehaviour {
 
     private AudioSource audioSource;
 
+    public bool showAsFreqDomain = false; // show this as frequency domain or time domain audio
+
     private bool fetchRawAudio = true; //used only so that the audio listener isnt used more than once
 
     private float[] audioInfoRaw = new float[2048]; // info passed into this array is based on the current songs [0-2047] L[0-1023] + R[1023-2047]
@@ -16,7 +18,7 @@ public class MusicManager : MonoBehaviour {
 
     public GameObject baseScale; // display garbage
     private GameObject[] allScales; // display garbage
-    private int screenWidth = 20; // display garbage
+    private float screenWidth = 19.8f; // display garbage
 
     public GameObject viewer; // display to see random detected things
 
@@ -36,22 +38,27 @@ public class MusicManager : MonoBehaviour {
         allScales = new GameObject[totalScales];
         for (int i = 0; i < totalScales; i++) {
             GameObject clone = Instantiate(baseScale);
-            float x = ((i+0.5f) * ((float)screenWidth/totalScales)) - screenWidth/2;
+            float x = ((i+0.5f) * ((float)screenWidth/totalScales)) - screenWidth/2.0f;
             clone.transform.position = new Vector3(x,0,0);
             allScales[i] = clone;
         }
     }
 
     void Update() {
-        //AudioListener.GetSpectrumData(audioInfoRaw, 0, FFTWindow.Rectangular);
-
         updateScales();
     }
 
     void updateScales() {
         if (audioInfoRaw == null) return;
+        if (showAsFreqDomain) {
+            updateScalesInfoFREQ(); // only update the scaler values when you need, for smooth transition
+        } else {
+            updateScalesInfoPCM(); // only update the scaler values when you need, for smooth transition
+        }
+        transitionAllScales();
+    }
 
-        updateScalesInfo(); // only update the scaler values when you need, for smooth transition
+    void transitionAllScales() {
         float prevScaleSize = 0;
         int numIncScales = 0;
         float totalHeight = 0;
@@ -61,6 +68,8 @@ public class MusicManager : MonoBehaviour {
             Vector3 newScale = new Vector3 (scaleSize,scalesInfo[i],0);
             allScales[i].transform.localScale = Vector3.Lerp(allScales[i].transform.localScale, newScale, transitionSpeed);
             // ^ update the scale
+
+            // RANDOM EFFECTS :: COLORS whatnot
 
             float thisScaleSize = MathF.Abs(allScales[i].transform.localScale.y);
             totalHeight += thisScaleSize;
@@ -76,12 +85,32 @@ public class MusicManager : MonoBehaviour {
             sr.color = new Color(numIncScales, 0,0);
             
         }
+        renderweirdBoxThing();
+    }
+
+    void updateScalesInfoFREQ() {
+        AudioListener.GetSpectrumData(audioInfoRaw, 0, FFTWindow.Rectangular);
+        if (updateTick > 0) {
+            updateTick--;
+            return;
+        }
+        updateTick = updateRate;
+        
+        for (int i = 0; i < totalScales; i++) { // go through all scales
+            //Debug.Log((int)Mathf.Floor(Mathf.Pow(i,2) * (16.0f/2048))); // THIS IS A RANDOM CURVE I CAME UP WITH (20khz is much less freq than ~100hz)
+            int recordNumber = (int)Mathf.Floor(Mathf.Pow(i,2) * (16.0f/2048));//i * (audioInfoRaw.Length/totalScales);
+            float newScale = audioInfoRaw[recordNumber] * 50;
+            scalesInfo[i] = newScale;
+        }
+    }
+
+    void renderweirdBoxThing() {
         double totalEnergy = getRMS();
         viewer.GetComponent<SpriteRenderer>().color = new Color((float)totalEnergy, 0, 0);
         viewer.transform.localScale = new Vector3((float)totalEnergy+1,(float)totalEnergy+1,1);
     }
 
-    void updateScalesInfo() { // update scalers based on the current raw audio info
+    void updateScalesInfoPCM() { // update scalers based on the current raw audio info
         if (updateTick > 0) {
             updateTick--;
             return;
@@ -114,7 +143,7 @@ public class MusicManager : MonoBehaviour {
 
 
     private void OnAudioFilterRead(float[] data, int channels) {
-        if (!fetchRawAudio) return;
+        if (!fetchRawAudio || showAsFreqDomain) return;
         audioInfoRaw = data;
         fetchRawAudio = false;
     }

@@ -8,6 +8,9 @@ With this I can try to detect patterns between the frequencies to determine when
 * Low sounds are represented by few wide waves/groups
 * High sounds are represented by many skinny waves/groups
 
+### Facts for FreqDomain:
+* start of a note cant be denoted by a peaked high frequency (some notes may drag out and will stay high/slowly get lower)
+
 ### Patterns to detect/use:
 * BPM
 * Total number of groups
