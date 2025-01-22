@@ -59,13 +59,12 @@ public class MusicManager : MonoBehaviour {
     }
 
     void transitionAllScales() {
-        float prevScaleSize = 0;
         int numIncScales = 0;
         float totalHeight = 0;
         for (int i = 0; i < totalScales; i++) {
             // always update the scale even if its value isnt the newest.
             
-            Vector3 newScale = new Vector3 (scaleSize,scalesInfo[i],0);
+            Vector3 newScale = new Vector3 (scaleSize,Time.deltaTime * 500 * scalesInfo[i],0);
             allScales[i].transform.localScale = Vector3.Lerp(allScales[i].transform.localScale, newScale, transitionSpeed);
             // ^ update the scale
 
@@ -79,10 +78,11 @@ public class MusicManager : MonoBehaviour {
             } else {
                 numIncScales = 0;
             }
-            prevScaleSize = thisScaleSize;
 
             SpriteRenderer sr = allScales[i].GetComponent<SpriteRenderer>();
             sr.color = new Color(numIncScales, 0,0);
+
+            //float thisFreqRange = frequencyFromScaleIndex(i);
             
         }
         renderweirdBoxThing();
@@ -98,10 +98,22 @@ public class MusicManager : MonoBehaviour {
         
         for (int i = 0; i < totalScales; i++) { // go through all scales
             //Debug.Log((int)Mathf.Floor(Mathf.Pow(i,2) * (16.0f/2048))); // THIS IS A RANDOM CURVE I CAME UP WITH (20khz is much less freq than ~100hz)
-            int recordNumber = (int)Mathf.Floor(Mathf.Pow(i,2) * (16.0f/2048));//i * (audioInfoRaw.Length/totalScales);
-            float newScale = audioInfoRaw[recordNumber] * 50;
+            int recordNumber = recordIndexFromScaleIndex(i);
+            if (recordNumber < i) recordNumber = i;
+            float newScale = audioInfoRaw[recordNumber] * 40; // index: 0-2047, freq: 20-20k (tested this). Each record is about 9.75hz higher than the previous
             scalesInfo[i] = newScale;
         }
+    }
+    int recordIndexFromScaleIndex(int index) { // takes in values from 0-512 outputs from 0-2048
+        int recordNumber = (int)Mathf.Floor(Mathf.Pow(index,2) * (16.0f/2048));
+        return recordNumber > index? recordNumber: index;
+        //index * (audioInfoRaw.Length/totalScales); // for equalized distribution
+    }
+    int scaleIndexFromRecordIndex(int index) { // inverse function of recordIndexFromScaleIndex
+        return (int)Mathf.Floor(Mathf.Sqrt(index * (2048/16.0f)));
+    }
+    float frequencyFromScaleIndex(int index) { // input: 0-512, output: 20-20k
+        return (recordIndexFromScaleIndex(index) * 9.755f) + 20; // 9.75 is the equalized distribution distance
     }
 
     void renderweirdBoxThing() {

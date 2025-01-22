@@ -10,6 +10,7 @@ With this I can try to detect patterns between the frequencies to determine when
 
 ### Facts for FreqDomain:
 * start of a note cant be denoted by a peaked high frequency (some notes may drag out and will stay high/slowly get lower)
+* the raw data float[2048] = index: 0-2047, freq: 20-20k (tested this). Each record is about 9.75hz higher than the previous
 
 ### Patterns to detect/use:
 * BPM
