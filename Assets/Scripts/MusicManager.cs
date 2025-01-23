@@ -22,6 +22,8 @@ public class MusicManager : MonoBehaviour {
 
     public GameObject viewer; // display to see random detected things
 
+    private MusicInfo musicOutput;
+
     
     private int updateTick = 0;
     public int updateRate = 20;
@@ -32,6 +34,7 @@ public class MusicManager : MonoBehaviour {
         scalesInfo = new float[totalScales];
         audioSource = GetComponent<AudioSource>();
         initScales();
+        musicOutput = new MusicInfo();
     }
 
     void initScales() {
@@ -86,6 +89,7 @@ public class MusicManager : MonoBehaviour {
             
         }
         renderweirdBoxThing();
+        musicOutput.updateSnapshot(audioInfoRaw, allScales);
     }
 
     void updateScalesInfoFREQ() {
@@ -100,7 +104,7 @@ public class MusicManager : MonoBehaviour {
             //Debug.Log((int)Mathf.Floor(Mathf.Pow(i,2) * (16.0f/2048))); // THIS IS A RANDOM CURVE I CAME UP WITH (20khz is much less freq than ~100hz)
             int recordNumber = recordIndexFromScaleIndex(i);
             if (recordNumber < i) recordNumber = i;
-            float newScale = audioInfoRaw[recordNumber] * 40; // index: 0-2047, freq: 20-20k (tested this). Each record is about 9.75hz higher than the previous
+            float newScale = audioInfoRaw[recordNumber] * 20; // index: 0-2047, freq: 20-20k (tested this). Each record is about 9.75hz higher than the previous
             scalesInfo[i] = newScale;
         }
     }
@@ -109,7 +113,7 @@ public class MusicManager : MonoBehaviour {
         return recordNumber > index? recordNumber: index;
         //index * (audioInfoRaw.Length/totalScales); // for equalized distribution
     }
-    int scaleIndexFromRecordIndex(int index) { // inverse function of recordIndexFromScaleIndex
+    public static int scaleIndexFromRecordIndex(int index) { // inverse function of recordIndexFromScaleIndex
         return (int)Mathf.Floor(Mathf.Sqrt(index * (2048/16.0f)));
     }
     float frequencyFromScaleIndex(int index) { // input: 0-512, output: 20-20k

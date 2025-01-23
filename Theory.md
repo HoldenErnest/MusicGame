@@ -43,3 +43,8 @@ private void OnAudioFilterRead(float[] data, int channels) {
     fetchRawAudio = false;
 }
 ```
+
+
+[Should I use fmod audio](https://www.fmod.com/docs/2.01/unity/user-guide.html)? seems like it may be more of an audio editor
+
+[Maybe this](https://discussions.unity.com/t/how-to-do-a-fft-in-unity/139527/3)
