@@ -85,7 +85,11 @@ public class MusicManager : MonoBehaviour {
             SpriteRenderer sr = allScales[i].GetComponent<SpriteRenderer>();
             sr.color = new Color(numIncScales, 0,0);
 
-            //float thisFreqRange = frequencyFromScaleIndex(i);
+            float freq = frequencyFromScaleIndex(i);
+
+            if (freq >= 500 && freq <= 2000) {
+                sr.color = Color.green;
+            }
             
         }
         renderweirdBoxThing();
@@ -108,7 +112,7 @@ public class MusicManager : MonoBehaviour {
             scalesInfo[i] = newScale;
         }
     }
-    int recordIndexFromScaleIndex(int index) { // takes in values from 0-512 outputs from 0-2048
+    public static int recordIndexFromScaleIndex(int index) { // takes in values from 0-512 outputs from 0-2048
         int recordNumber = (int)Mathf.Floor(Mathf.Pow(index,2) * (16.0f/2048));
         return recordNumber > index? recordNumber: index;
         //index * (audioInfoRaw.Length/totalScales); // for equalized distribution
@@ -116,7 +120,7 @@ public class MusicManager : MonoBehaviour {
     public static int scaleIndexFromRecordIndex(int index) { // inverse function of recordIndexFromScaleIndex
         return (int)Mathf.Floor(Mathf.Sqrt(index * (2048/16.0f)));
     }
-    float frequencyFromScaleIndex(int index) { // input: 0-512, output: 20-20k
+    public static float frequencyFromScaleIndex(int index) { // input: 0-512, output: 20-20k
         return (recordIndexFromScaleIndex(index) * 9.755f) + 20; // 9.75 is the equalized distribution distance
     }
 
