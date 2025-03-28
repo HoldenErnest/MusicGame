@@ -48,3 +48,38 @@ private void OnAudioFilterRead(float[] data, int channels) {
 [Should I use fmod audio](https://www.fmod.com/docs/2.01/unity/user-guide.html)? seems like it may be more of an audio editor
 
 [Maybe this](https://discussions.unity.com/t/how-to-do-a-fft-in-unity/139527/3)
+
+
+
+## From the top:
+
+ * I get frequency loudness per each frame. Well call each of these a `frequencyFrame`
+ * FOR EACH frequencyFrame:
+    * divide the frequencyFrame into n sections which will represent n different `notes`.         (imagine it as compacting the 1024 channels into n notes instead)
+    * each of these notes will hold the `highest frequency` of all frequencies in that section as well as the `average`
+    * FOR EACH note:
+        * compare it with the equivilent notes in a stored `noteArrayBuffer` (a matrix of notes, low to high in each array. And each array seperated by time between frames)
+        * this is an `activeNote` IF:
+            * this note is much higher than the buffered ones.
+ * store this new note array in the buffer
+ *** Try showing this information directly first, but it might have timing problems in which case do the below ***
+
+ * Once you have all active notes you can determine if theyre a `shownNote` IF:
+    * it lines up with the bpm (for major notes)
+    * a note from this frequency hasnt been played in n ms
+    * there arent many other shown notes in this `shownNotesSection`
+ * a shown notes section is a row of notes which hold the tiles you will physically click ( ultimately the notes have to have some kind of spacing so the player isnt overwhelmed notes at nearly the same time) (these sections should move somewhat with the bpm)
+
+.
+
+#### Notes to be generated over time:
+ * green bars represent different note sections
+ * black lines represent active notes (grey is potentially active)
+
+![Bad notes](./Images/Theory/noteExample.png)
+
+#### Straight forward notes to detect
+ ![Bad notes](./Images/Theory/specNotes.png)
+
+#### Though some notes may be active, they might not be played if its not lined up with bpm
+ ![Bad notes](./Images/Theory/specNotes2.png)
