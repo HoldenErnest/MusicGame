@@ -1,3 +1,6 @@
+// Holden Ernest - 3/28/2025
+// generates a spectrogram based on raw audio frequency data (this data must be passed into drawLine each frame)
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -12,7 +15,7 @@ public class SpectrogramGen : MonoBehaviour
     private int currentLine = 0;
 
     private int height = 0;
-    private int width = 4096; // number of time samples
+    private int width = 2048; // number of time samples // if you run at 60 lines a second with 1024 lines, it will take ~17 seconds
 
     private readonly float maxFreq = 1f;
 
@@ -26,25 +29,26 @@ public class SpectrogramGen : MonoBehaviour
         if (endofTexture) return;
 
         //max = Mathf.Max(data);
-        
+
         for (int i = 0; i < height; i++) {
-            float amplitude = data[i];// / max;
+            float amplitude = data[i] / max;
             amplitude = Mathf.Pow(amplitude, 0.2f); // increase the brightness of the color
 
             Color c = colorFromAmp2(amplitude);
 
             texture.SetPixel(currentLine, i, c);
-
-            if (data[i] > max) max = data[i];
             
+            if (data[i] > max) max = data[i];
+
         }
         currentLine++;
         if (currentLine > width) {
             endofTexture = true;
+            texture.Apply();
+            Debug.Log("MAX was " + max);
             saveImage();
         }
-
-        texture.Apply();
+        
     }
 
     private Color colorFromAmp1(float amplitude) {
@@ -70,6 +74,23 @@ public class SpectrogramGen : MonoBehaviour
             c = new Color(1f, 0.5f + (2 * (amplitude - 0.75f)), 4 * (amplitude - 0.75f)); // orange to white
         }
         return c;
+    }
+
+    private double getRMS(ref float[] data) {
+        double square = 0;
+        double mean = 0;
+        double root = 0;
+        int n = data.Length/2;
+
+        for (int i = 0; i < n; i++)
+        {
+            square += Math.Pow(data[i], 2);
+        }
+
+        mean = square / n;
+        root = Math.Sqrt(mean);
+
+        return root;
     }
 
     void resetTexture(int h) {

@@ -100,10 +100,19 @@ public class MusicManager : MonoBehaviour {
         renderweirdBoxThing();
         musicOutput.updateSnapshot(audioInfoRaw, allScales);
     }
-
+    float lastTime = 0f;
     void updateScalesInfoFREQ() {
         AudioListener.GetSpectrumData(audioInfoRaw, 0, FFTWindow.Rectangular);
-        specGen.drawLine(ref audioInfoRaw);
+
+        if (Time.time - lastTime >= 0.0166f) { // draw lines 60 times a second
+            specGen.drawLine(ref audioInfoRaw);
+            //Debug.Log("drew line with interval: " + (Time.time - lastTime));
+            lastTime = Time.time;
+            
+        }
+        
+
+
         if (updateTick > 0) {
             updateTick--;
             return;

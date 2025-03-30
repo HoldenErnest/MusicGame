@@ -49,7 +49,9 @@ private void OnAudioFilterRead(float[] data, int channels) {
 
 [Maybe this](https://discussions.unity.com/t/how-to-do-a-fft-in-unity/139527/3)
 
-
+### Random thoughts
+ * use a better fft instead of unitys
+ * 
 
 ## From the top:
 
