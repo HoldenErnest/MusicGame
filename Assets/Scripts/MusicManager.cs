@@ -30,7 +30,12 @@ public class MusicManager : MonoBehaviour {
     public float transitionSpeed = 0.1f;
     public float scaleSize = 0.1f;
 
+    SpectrogramGen specGen;
+
+
     void Start() {
+        specGen = new SpectrogramGen();
+
         scalesInfo = new float[totalScales];
         audioSource = GetComponent<AudioSource>();
         initScales();
@@ -98,6 +103,7 @@ public class MusicManager : MonoBehaviour {
 
     void updateScalesInfoFREQ() {
         AudioListener.GetSpectrumData(audioInfoRaw, 0, FFTWindow.Rectangular);
+        specGen.drawLine(ref audioInfoRaw);
         if (updateTick > 0) {
             updateTick--;
             return;

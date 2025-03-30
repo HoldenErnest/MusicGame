@@ -76,10 +76,16 @@ private void OnAudioFilterRead(float[] data, int channels) {
  * green bars represent different note sections
  * black lines represent active notes (grey is potentially active)
 
-![Bad notes](./Images/Theory/noteExample.png)
+![example of notes](./Images/Theory/noteExample.png)
 
 #### Straight forward notes to detect
- ![Bad notes](./Images/Theory/specNotes.png)
+ ![good notes](./Images/Theory/specNotes.png)
 
 #### Though some notes may be active, they might not be played if its not lined up with bpm
  ![Bad notes](./Images/Theory/specNotes2.png)
+
+
+
+#### My spectrogram progress (Audacity's vs Mine)
+ ![Bad notes](./Images/Theory/customSpectrograph.png)
+ ![Bad notes](./Images/Theory/customSpectrograph2.png)
