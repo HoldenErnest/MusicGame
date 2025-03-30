@@ -65,10 +65,10 @@ private void OnAudioFilterRead(float[] data, int channels) {
  *** Try showing this information directly first, but it might have timing problems in which case do the below ***
 
  * Once you have all active notes you can determine if theyre a `shownNote` IF:
-    * it lines up with the bpm (for major notes)
+    * //it lines up with the bpm (for major notes)
     * a note from this frequency hasnt been played in n ms
     * there arent many other shown notes in this `shownNotesSection`
- * a shown notes section is a row of notes which hold the tiles you will physically click ( ultimately the notes have to have some kind of spacing so the player isnt overwhelmed notes at nearly the same time) (these sections should move somewhat with the bpm)
+ * a shown notes section is a row of notes which hold the tiles you will physically click ( ultimately the notes have to have some kind of spacing so the player isnt overwhelmed notes at nearly the same time) (these sections should move somewhat with the bpm). If there are ever consecutive active notes, choose only the middle one to be displayed?
 
 .
 
