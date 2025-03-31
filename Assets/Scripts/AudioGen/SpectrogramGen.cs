@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using UnityEditor.ShaderGraph;
 using UnityEngine;
 
 public class SpectrogramGen : MonoBehaviour
@@ -19,7 +20,11 @@ public class SpectrogramGen : MonoBehaviour
 
     private readonly float maxFreq = 1f;
 
+    //TEMP----------
+    Octave[] octaves = new Octave[9];
+
     public SpectrogramGen() {
+
     }
 
     float max = 0.1f;
@@ -44,7 +49,7 @@ public class SpectrogramGen : MonoBehaviour
         currentLine++;
         if (currentLine > width) {
             endofTexture = true;
-            postProcessTexture();
+            postProcessTexture(ref data);
             texture.Apply();
             Debug.Log("MAX was " + max);
             saveImage();
@@ -77,9 +82,22 @@ public class SpectrogramGen : MonoBehaviour
         return c;
     }
 
-    private void postProcessTexture() { // run calculations on the result / after touchups
+    private void postProcessTexture(ref float[] data) { // run calculations on the result / after touchups
+        postOctaveViewer(true, ref data);
+    }
+    private void postOctaveViewer(bool drawNotes, ref float[] data) { // horizontal lines to show octaves
+        //TEMP---------
+        for (int i = 0; i < 9; i++) {
+            octaves[i] = new Octave(i, ref data);
+        }
+
+        foreach (Octave o in octaves) {
+            o.drawOctaveFull(texture, drawNotes);
+        }
+    }
+    private void DEPRCpostOctaveViewer() {
         for (int i = 0; i < height; i++) {
-            float hz = heightInHz(i);
+            float hz = DEPRCheightInHz(i);
             Color c = Color.black;
             if (hz < 31) {
                 c.a = 1f;
@@ -113,7 +131,7 @@ public class SpectrogramGen : MonoBehaviour
         }
     }
 
-    private float heightInHz(int h) { // returns a frequency value in hz from a given height value
+    private float DEPRCheightInHz(int h) { // returns a frequency value in hz from a given height value
         // top is 20khz, bottom is 20hz
         return 20 + (9.75f * h);
     }

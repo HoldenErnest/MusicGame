@@ -49,23 +49,23 @@ private void OnAudioFilterRead(float[] data, int channels) {
 
 [Maybe this](https://discussions.unity.com/t/how-to-do-a-fft-in-unity/139527/3)
 
-[Piano frequency chart](https://mixbutton.com/music-tools/frequency-and-pitch/music-note-to-frequency-chart)
-
 ### Random thoughts
  * use a better fft instead of unitys
- * 
+ * "The Mel scale represents frequency space linearly up to 700 Hz and logarithmically above that, mimicking how humans perceive pitch space"
 
 ## From the top:
 
- * I get frequency loudness per each frame. Well call each of these a `frequencyFrame`
+ * I get frequency amplitude per each frame. We'll call each of these a `frequencyFrame`
  * FOR EACH frequencyFrame:
-    * divide the frequencyFrame into n sections which will represent n different `notes`.         (imagine it as compacting the 1024 channels into n notes instead)
-    * each of these notes will hold the `highest frequency` of all frequencies in that section as well as the `average`
-    * FOR EACH note:
-        * compare it with the equivilent notes in a stored `noteArrayBuffer` (a matrix of notes, low to high in each array. And each array seperated by time between frames)
-        * this is an `activeNote` IF:
-            * this note is much higher than the buffered ones.
- * store this new note array in the buffer
+    * divide the frequencyFrame into the 9 `octaves` according to [this chart](https://mixbutton.com/music-tools/frequency-and-pitch/music-note-to-frequency-chart). (you might be able to scrap some of the edge octaves)
+    * FOR EACH of the octaves:
+        * divide the octave into 7 `notes`, once again according to the chart
+        * each of these notes will hold the `highest frequency` in its frequency range, as well as the `average`
+        * FOR EACH note:
+            * compare it with the equivilent notes in a stored `noteArrayBuffer` (a few previous slices of frequencyFrames)
+            * this is an `activeNote` IF:
+                * this note is much higher than the buffered ones. (whether it be highest freq or higher average)
+        * store this new note array in the buffer
  *** Try showing this information directly first, but it might have timing problems in which case do the below ***
 
  * Once you have all active notes you can determine if theyre a `shownNote` IF:
