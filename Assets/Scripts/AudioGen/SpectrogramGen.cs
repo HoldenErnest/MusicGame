@@ -44,6 +44,7 @@ public class SpectrogramGen : MonoBehaviour
         currentLine++;
         if (currentLine > width) {
             endofTexture = true;
+            postProcessTexture();
             texture.Apply();
             Debug.Log("MAX was " + max);
             saveImage();
@@ -74,6 +75,47 @@ public class SpectrogramGen : MonoBehaviour
             c = new Color(1f, 0.5f + (2 * (amplitude - 0.75f)), 4 * (amplitude - 0.75f)); // orange to white
         }
         return c;
+    }
+
+    private void postProcessTexture() { // run calculations on the result / after touchups
+        for (int i = 0; i < height; i++) {
+            float hz = heightInHz(i);
+            Color c = Color.black;
+            if (hz < 31) {
+                c.a = 1f;
+                texture.GetPixel(0,i);
+                
+            } else if (hz < 62) {
+                c.a = 0.5f;
+            } else if (hz < 124) {
+                c.a = 1f;
+            } else if (hz < 247) {
+                c.a = 0.5f;
+            } else if (hz < 494) {
+                c.a = 1f;
+            } else if (hz < 987) {
+                c.a = 0.5f;
+            } else if (hz < 1976) {
+                c.a = 1f;
+            } else if (hz < 3951) {
+                c.a = 0.5f;
+            } else if (hz < 7902) {
+                c.a = 1f;
+            } else {
+                c.a = 0.1f;
+            }
+
+            for (int x = 0; x < width; x++) {
+                Color d = texture.GetPixel(x,i);
+                d.a = c.a;
+                texture.SetPixel(x,i,d);
+            }
+        }
+    }
+
+    private float heightInHz(int h) { // returns a frequency value in hz from a given height value
+        // top is 20khz, bottom is 20hz
+        return 20 + (9.75f * h);
     }
 
     private double getRMS(ref float[] data) {
