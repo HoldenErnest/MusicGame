@@ -49,6 +49,8 @@ private void OnAudioFilterRead(float[] data, int channels) {
 
 [Maybe this](https://discussions.unity.com/t/how-to-do-a-fft-in-unity/139527/3)
 
+[Piano frequency chart](https://mixbutton.com/music-tools/frequency-and-pitch/music-note-to-frequency-chart)
+
 ### Random thoughts
  * use a better fft instead of unitys
  * 
