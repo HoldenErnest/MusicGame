@@ -43,7 +43,7 @@ public class Octave {
             //TODO: CACHE the above data.
             int totalFreqs = highNoteIndex - lowNoteIndex;
             if (totalFreqs <= 0) continue;
-            
+
             notes[i] = new Note(i, data.Skip(lowNoteIndex).Take(totalFreqs), lowNoteIndex);
             
         }
@@ -66,7 +66,7 @@ public class Octave {
 
     // DRAWABLE functions
     public void drawOctaveFull(Texture2D tex, bool drawNotes) {
-        float alt = ocNum % 2 == 1 ? 1f : 0.5f;
+        float alt = ocNum % 2 == 1 ? 1f : 0.75f;
         if (drawNotes) {
                 foreach (Note n in notes) {
                     n?.drawNoteFull(tex, alt);

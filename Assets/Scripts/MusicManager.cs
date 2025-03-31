@@ -12,7 +12,7 @@ public class MusicManager : MonoBehaviour {
 
     private bool fetchRawAudio = true; //used only so that the audio listener isnt used more than once
 
-    private float[] audioInfoRaw = new float[2048]; // info passed into this array is based on the current songs [0-2047] L[0-1023] + R[1023-2047]
+    private float[] audioInfoRaw = new float[4096]; // info passed into this array is based on the current songs [0-2047] L[0-1023] + R[1023-2047]
     private float[] scalesInfo;
     public int totalScales = 8;
 

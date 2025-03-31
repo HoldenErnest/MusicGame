@@ -65,6 +65,7 @@ private void OnAudioFilterRead(float[] data, int channels) {
             * compare it with the equivilent notes in a stored `noteArrayBuffer` (a few previous slices of frequencyFrames)
             * this is an `activeNote` IF:
                 * this note is much higher than the buffered ones. (whether it be highest freq or higher average)
+                * this note is higher than both the neighboring notes ( if the average is about the same there could be 2 active notes right next to eachother)
         * store this new note array in the buffer
  *** Try showing this information directly first, but it might have timing problems in which case do the below ***
 
@@ -93,3 +94,6 @@ private void OnAudioFilterRead(float[] data, int channels) {
 #### My spectrogram progress (Audacity's vs Mine)
  ![Bad notes](./Images/Theory/customSpectrograph.png)
  ![Bad notes](./Images/Theory/customSpectrograph2.png)
+
+#### Note seperation on the spectrogram
+ ![Note Seperation](./Images/Theory/noteSeperation.png)
