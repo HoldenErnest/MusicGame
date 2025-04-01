@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 [System.Serializable]
@@ -14,6 +15,11 @@ public class Octave {
 
     private int absoluteStartIndex = -1; // the index in rawAudioData[] at which this octaves frequencies begin
     private int absoluteEndIndex = -1;
+
+    public static readonly Octave nullOctave = new NullOctave();
+    public Octave() {
+        
+    }
     public Octave(int octaveNumber, ref float[] data) {
         notes = new Note[12];
         ocNum = octaveNumber;
@@ -35,20 +41,76 @@ public class Octave {
         absoluteStartIndex = indexFromFreq(startFreq, data.Length); 
         absoluteEndIndex = indexFromFreq(endFreq, data.Length);
 
-        for (int i = 0; i < 12; i++) { // get all notes in this octave, 0-11
+        initNotes(ref data);
+        
+    }
+    private void initNotes(ref float[] data) {
+        // this is only called the first time any notes are made.
+        for (int i = 0; i < notes.Length; i++) { // get all notes in this octave, 0-11
             float lowNoteFreq = getFreqFromNote(ocNum, i-0.5f);
             float highNoteFreq = getFreqFromNote(ocNum, i+0.5f);
             int lowNoteIndex = indexFromFreq(lowNoteFreq, data.Length);
             int highNoteIndex = indexFromFreq(highNoteFreq, data.Length);
             //TODO: CACHE the above data.
             int totalFreqs = highNoteIndex - lowNoteIndex;
-            if (totalFreqs <= 0) continue;
+            if (totalFreqs <= 0) {
+                notes[i] = Note.nullNote;
+                continue;
+            }
 
             notes[i] = new Note(i, data.Skip(lowNoteIndex).Take(totalFreqs), lowNoteIndex);
-            
+        }
+    }
+
+    public void updateOctave(Octave prev, ref float[] data) { // clone an existing Octave
+        processPrevOctave(prev);
+        updateAllNoteData(ref data);
+    }
+    private void updateAllNoteData(ref float[] data) {
+        // after you clone from a previous note, new data must be given to it.
+        for (int i = 0; i < notes.Length; i++) {
+            (int start, int total) freqRange= notes[i].getFrequencyRange();
+            notes[i].updateNote(data.Skip(freqRange.start).Take(freqRange.total));
+        }
+    }
+    private void processPrevOctave(Octave prev) {
+        cloneNewNotes(prev);
+    }
+    public void cloneNewNotes(Octave prev) {
+        // clone all the notes based on the previous octave
+        for (int i = 0; i < notes.Length; i++) {
+            notes[i] = new Note(prev.getNote(i));
+        }
+    }
+    public Note getNote(int index) {
+        return notes[index];
+    }
+
+    public void activateNotes(Octave lowNeighbor, Octave highNeighbor) {
+        // octaves dont compare against other octaves directly, but are needed for the note neigbors
+
+        // set each notes neigbors in this octave
+        // set the edge neighbors of this octave to lowNs high and highNs low respectivly
+
+        for (int i = 0; i < notes.Length; i++) {
+            // find each notes neighbor
+            if (i == 0) {
+                if (lowNeighbor.isNull()) {
+                    notes[i].activateNote(Note.nullNote, notes[i+1]);
+                } else { // if there is a lower octave, grab its highest note
+                    notes[i].activateNote(lowNeighbor.getNote(11), notes[i+1]);
+                }
+            } else if (i == notes.Length - 1) {
+                if (highNeighbor.isNull()) {
+                    notes[i].activateNote(notes[i-1],  Note.nullNote);
+                } else { // if there is an upper octave, grab its lowest note
+                    notes[i].activateNote(notes[i-1],  highNeighbor.getNote(0));
+                }
+            } else {
+                notes[i].activateNote(notes[i-1], notes[i+1]);
+            }
         }
 
-        
     }
 
     private float getFreqFromNote(int octave, float note) { // octave from 0-8, note from 0-11
@@ -65,12 +127,12 @@ public class Octave {
 
 
     // DRAWABLE functions
-    public void drawOctaveFull(Texture2D tex, bool drawNotes) {
+    public void drawOctaveFull(ref Texture2D tex, bool drawNotes) {
         float alt = ocNum % 2 == 1 ? 1f : 0.75f;
         if (drawNotes) {
-                foreach (Note n in notes) {
-                    n?.drawNoteFull(tex, alt);
-                }
+            foreach (Note n in notes) {
+                n?.drawNoteFull(ref tex, alt);
+            }
         } else {
             for (int y = absoluteStartIndex; y < absoluteEndIndex; y++) {
                 for (int x = 0; x < tex.width; x++) {
@@ -80,6 +142,14 @@ public class Octave {
                 }
             }
         }
+    }
+    public void drawCurrentNotes(ref Texture2D tex, int lineNum) {
+        foreach (Note n in notes) {
+            n?.drawNote(ref tex, lineNum);
+        }
+    }
+    public virtual bool isNull() {
+        return false;
     }
 
 }

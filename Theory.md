@@ -97,3 +97,4 @@ private void OnAudioFilterRead(float[] data, int channels) {
 
 #### Note seperation on the spectrogram
  ![Note Seperation](./Images/Theory/noteSeperation.png)
+![Note Seperation working](./Images/Theory/noteSeperation2.png)

@@ -4,26 +4,51 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 [System.Serializable]
 public class Note {
-    int noteNum = 0; // A B C D E F G (0-11)  WITH # and b
+    private int noteNum = 0; // A B C D E F G (0-11)  WITH # and b
     private float maxAmplitude = 0;
     private float totalAmplitude = 0;
     private int totalFreqCount = 0;
 
     private int absoluteStartIndex = -1; // the index in rawAudioData[] at which this notes frequencies begin
 
+    private bool isNoteActive = false;
+
+    private Queue<Note> bufferedNotes = new Queue<Note>(); 
+
+    public static readonly Note nullNote = new NullNote();
+
+    public Note() {
+
+    }
+    public Note(Note prevNote) {
+        // build off a previous note, it already did some "heavy" computations
+        processPrevNote(prevNote);
+        bufferPreviousNote(prevNote);
+    }
     public Note(int noteNumber, IEnumerable<float> frequencyRange, int absoluteStartIndex) {
         noteNum = noteNumber;
         this.absoluteStartIndex = absoluteStartIndex;
+        updateNote(frequencyRange);
+    }
+    public void updateNote(IEnumerable<float> frequencyRange) {
+        totalFreqCount = 0;
         foreach (float amplitude in frequencyRange) {
             if (amplitude > maxAmplitude) {
                 maxAmplitude = amplitude;
             }
             totalAmplitude += amplitude;
             totalFreqCount++;
+        }
+    }
+    public void bufferPreviousNote(Note prev) {
+        bufferedNotes.Enqueue(prev);
+        if (bufferedNotes.Count > NoteComputation.TOTAL_BUFFERS) {
+            bufferedNotes.Dequeue();
         }
     }
 
@@ -36,11 +61,52 @@ public class Note {
 
     public override string ToString() {
         char note = (char)('A' + noteNum);
-        return note + ": " + maxAmplitude;
+        return note + ": " + normalizedAmplitude(maxAmplitude) + ". Range: " + absoluteStartIndex + ", " + (absoluteStartIndex + totalFreqCount);
+    }
+    private void processPrevNote(Note prev) {
+        if (prev == null || prev.isNull()) return;
+        setNoteNum(prev.getNoteNum());
+        setFreqencyRange(prev.getFrequencyRange());
+    }
+    public int getNoteNum() {
+        return noteNum;
+    }
+    public void setNoteNum(int nn) {
+        noteNum = nn;
+    }
+    public void setFreqencyRange((int start, int total) range) {
+        totalFreqCount = range.total;
+        absoluteStartIndex = range.start;
+    }
+    public (int, int) getFrequencyRange() {
+        // returns (total, start);
+        return (absoluteStartIndex, totalFreqCount);
+    }
+    public (float, float) compareNotes(Note other) {
+        // returns this.~ - other.~
+        return (maxAmplitude - other.maxAmplitude, getAvgAmplitude() - other.getAvgAmplitude());
+    }
+
+    public virtual bool isActive() {
+        return isNoteActive;
+    }
+    public void activateNote(Note lowNeighbor, Note highNeighbor) {
+        // test against itself: is this high enough difference from the previous buffered notes
+        // test against neighboring notes: there could be multiple neigboring notes played but most of the time its just overflow
+        // test against the last time a note on this lane was played ?? might not be needed
+        // compare with the two neighbors
+        if (normalizedAmplitude(maxAmplitude) + 0.7f >= 1) { // within the top 10%
+                isNoteActive = true;
+                return;
+            }
+        isNoteActive = false;
+    }
+    private float normalizedAmplitude(float amp) {
+        return amp / NoteComputation.maxFrequency;
     }
 
     // DRAWABLE functions
-    public void drawNoteFull(Texture2D tex, float currentAlpha) {
+    public void drawNoteFull(ref Texture2D tex, float currentAlpha) {
         if (totalFreqCount <= 0) return;
         for (int y = absoluteStartIndex; y < absoluteStartIndex + totalFreqCount; y++) {
             float alt = noteNum % 2 == 1 ? 0.25f : 0f;
@@ -51,5 +117,18 @@ public class Note {
             }
         }
     }
+    public void drawNote(ref Texture2D tex, int x) {
+        // draw the note based on its Active modifier.
+        if (!isActive()) return;
 
+        Color c = Color.green;
+        for (int y = absoluteStartIndex; y < absoluteStartIndex + totalFreqCount; y++) {
+            tex.SetPixel(x,y,c);
+        }
+    }
+    // END DRAWABLE functions
+
+    public virtual bool isNull() {
+        return false;
+    }
 }

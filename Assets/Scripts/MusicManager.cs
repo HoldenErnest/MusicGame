@@ -40,6 +40,8 @@ public class MusicManager : MonoBehaviour {
         audioSource = GetComponent<AudioSource>();
         initScales();
         musicOutput = new MusicInfo();
+
+        NoteComputation.init(); // IMPORTANT
     }
 
     void initScales() {
