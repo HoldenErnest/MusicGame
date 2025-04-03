@@ -159,6 +159,7 @@ MonoBehaviour:
   updateRate: 0
   transitionSpeed: 0.1
   scaleSize: 0.03
+  maxAmpMargin: 0.7
 --- !u!82 &4017883
 AudioSource:
   m_ObjectHideFlags: 0

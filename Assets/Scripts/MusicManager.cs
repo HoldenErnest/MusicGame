@@ -23,7 +23,6 @@ public class MusicManager : MonoBehaviour {
     public GameObject viewer; // display to see random detected things
 
     private MusicInfo musicOutput;
-
     
     private int updateTick = 0;
     public int updateRate = 20;
@@ -32,8 +31,23 @@ public class MusicManager : MonoBehaviour {
 
     SpectrogramGen specGen;
 
+    /// TEMP for testing ---------------
+    public float maxAmpMargin = 0.7f;
+    // TEMP for testing ---------------
+    
+    void OnValidate() {
+        // TEMP for testing ---------------
+        Note.maxAmpMargin = maxAmpMargin;
+        // TEMP for testing ---------------
+    }
+
 
     void Start() {
+
+        // TEMP for testing ---------------
+        Note.maxAmpMargin = maxAmpMargin;
+        // TEMP for testing ---------------
+
         specGen = new SpectrogramGen();
 
         scalesInfo = new float[totalScales];

@@ -29,11 +29,14 @@ public class SpectrogramGen : MonoBehaviour
         if (texture == null) resetTexture(data.Length/2);
         if (endofTexture) return;
 
+        NoteComputation.currentMaxFreq = 0f;
+        drawCurrentLine(ref data);
+
         // CORE COMPUTATIONS -- this should be moved later, not in the scope of drawing
         NoteComputation.updateOctaves(ref data);
         // CORE COMPUTATIONS -- this should be moved later
 
-        drawCurrentLine(ref data);
+        
         drawCurrentNotes();
 
         currentLine++;
@@ -49,11 +52,14 @@ public class SpectrogramGen : MonoBehaviour
             float amplitude = data[i] / NoteComputation.maxFrequency;
             amplitude = Mathf.Pow(amplitude, 0.2f); // increase the brightness of the color
 
+            // TODO: interpolate amp to bark scale
+
             Color c = colorFromAmp2(amplitude);
 
             texture.SetPixel(currentLine, i, c);
             
             if (data[i] > NoteComputation.maxFrequency) NoteComputation.maxFrequency = data[i];
+            if (data[i] > NoteComputation.currentMaxFreq) NoteComputation.currentMaxFreq = data[i];
 
         }
     }

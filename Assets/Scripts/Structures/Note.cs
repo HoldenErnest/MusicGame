@@ -1,11 +1,13 @@
 // Holden Ernest - 3/31/2025
 // with the input of a frequency range that represents this single note, determine the core information about it
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
+
 
 [System.Serializable]
 public class Note {
@@ -22,6 +24,14 @@ public class Note {
 
     public static readonly Note nullNote = new NullNote();
 
+    // TEMP for testing ---------------
+    public static float maxAmpMargin = 0.7f; // 0.7 means notes highest is within 30% of songs overall highest 
+    // TEMP for testing ---------------
+
+
+    /// <summary>
+    /// Do not use, this is just for NullNote
+    /// </summary>
     public Note() {
 
     }
@@ -61,7 +71,7 @@ public class Note {
 
     public override string ToString() {
         char note = (char)('A' + noteNum);
-        return note + ": " + normalizedAmplitude(maxAmplitude) + ". Range: " + absoluteStartIndex + ", " + (absoluteStartIndex + totalFreqCount);
+        return note + ": " + absNormalAmplitude(maxAmplitude) + ". Range: " + absoluteStartIndex + ", " + (absoluteStartIndex + totalFreqCount);
     }
     private void processPrevNote(Note prev) {
         if (prev == null || prev.isNull()) return;
@@ -95,14 +105,33 @@ public class Note {
         // test against neighboring notes: there could be multiple neigboring notes played but most of the time its just overflow
         // test against the last time a note on this lane was played ?? might not be needed
         // compare with the two neighbors
-        if (normalizedAmplitude(maxAmplitude) + 0.7f >= 1) { // within the top 10%
-                isNoteActive = true;
-                return;
-            }
+        if (containsRelHighAmp()) {
+            isNoteActive = true;
+            return;
+        }
         isNoteActive = false;
     }
-    private float normalizedAmplitude(float amp) {
+    public bool containsAbsHighAmp() {
+        // does this note contain an amplitude close to the max amp in the whole song.
+        if (absNormalAmplitude(maxAmplitude) + maxAmpMargin >= 1) {
+            isNoteActive = true;
+            return true;
+        }
+        return false;
+    }
+    public bool containsRelHighAmp() {
+        // does this note contain an amplitude close to the max amp in the whole song.
+        if (relNormalAmplitude(maxAmplitude) + maxAmpMargin >= 1) {
+            isNoteActive = true;
+            return true;
+        }
+        return false;
+    }
+    private float absNormalAmplitude(float amp) { // absolute max frequency
         return amp / NoteComputation.maxFrequency;
+    }
+    private float relNormalAmplitude(float amp) { // relative to current frame
+        return amp / NoteComputation.currentMaxFreq;
     }
 
     // DRAWABLE functions

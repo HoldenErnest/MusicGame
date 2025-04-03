@@ -76,6 +76,17 @@ private void OnAudioFilterRead(float[] data, int channels) {
  * a shown notes section is a row of notes which hold the tiles you will physically click ( ultimately the notes have to have some kind of spacing so the player isnt overwhelmed notes at nearly the same time) (these sections should move somewhat with the bpm). If there are ever consecutive active notes, choose only the middle one to be displayed?
 
 .
+### Note activating algorithm ---------------
+* interpolate the data to the [Bark scale](https://en.wikipedia.org/wiki/Bark_scale)
+
+#### Background Note:  (maybe a bass (loud and there but not as prevelant to what we percieve))
+ * maxAmp is within X% of relativeMaxAmp(frequencyFrame highest)
+ * ?? some kind of weighing: lower octaves are heard less by our ears
+#### Forground Note:  (the main notes)
+ * has buildup: previous notes should be lower amplitude (?? avg or max)
+ * compare neighbors: highest peak neighbor wins.
+ 
+.
 
 #### Notes to be generated over time:
  * green bars represent different note sections
