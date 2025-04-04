@@ -7,7 +7,7 @@ using UnityEngine;
 
 public static class NoteComputation {
     
-    public static readonly int TOTAL_BUFFERS = 3; // buffers have been moved to the 'Note' class level and are deeply rooted (each note holds its own buffer of preceding notes)
+    public static readonly int TOTAL_BUFFERS = 5; // buffers have been moved to the 'Note' class level and are deeply rooted (each note holds its own buffer of preceding notes)
     private static Octave[] octaves = new Octave[9];
     public static float maxFrequency = 0.05f;
     public static float currentMaxFreq = 0f;

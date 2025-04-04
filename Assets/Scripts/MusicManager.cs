@@ -32,21 +32,17 @@ public class MusicManager : MonoBehaviour {
     SpectrogramGen specGen;
 
     /// TEMP for testing ---------------
-    public float maxAmpMargin = 0.7f;
+    //public float maxAmpMargin = 0.7f;
     // TEMP for testing ---------------
     
     void OnValidate() {
         // TEMP for testing ---------------
-        Note.maxAmpMargin = maxAmpMargin;
+        //Note.maxAmpMargin = maxAmpMargin;
         // TEMP for testing ---------------
     }
 
 
     void Start() {
-
-        // TEMP for testing ---------------
-        Note.maxAmpMargin = maxAmpMargin;
-        // TEMP for testing ---------------
 
         specGen = new SpectrogramGen();
 
@@ -118,7 +114,7 @@ public class MusicManager : MonoBehaviour {
     }
     float lastTime = 0f;
     void updateScalesInfoFREQ() {
-        AudioListener.GetSpectrumData(audioInfoRaw, 0, FFTWindow.Rectangular);
+        AudioListener.GetSpectrumData(audioInfoRaw, 0, FFTWindow.Hanning);
 
         if (Time.time - lastTime >= 0.0166f) { // draw lines 60 times a second
             specGen.drawLine(ref audioInfoRaw);

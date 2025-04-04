@@ -128,12 +128,17 @@ public class Octave {
 
     // DRAWABLE functions
     public void drawOctaveFull(ref Texture2D tex, bool drawNotes) {
-        float alt = ocNum % 2 == 1 ? 1f : 0.75f;
+        
         if (drawNotes) {
             foreach (Note n in notes) {
-                n?.drawNoteFull(ref tex, alt);
+                n?.drawNoteFull(ref tex, 1f);
+            }
+            for (int x = 0; x < tex.width; x++) {
+                Color d = Color.cyan;
+                tex.SetPixel(x,absoluteEndIndex,d);
             }
         } else {
+            float alt = ocNum % 2 == 1 ? 1f : 0.75f;
             for (int y = absoluteStartIndex; y < absoluteEndIndex; y++) {
                 for (int x = 0; x < tex.width; x++) {
                     Color d = tex.GetPixel(x,y);

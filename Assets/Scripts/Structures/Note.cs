@@ -25,7 +25,9 @@ public class Note {
     public static readonly Note nullNote = new NullNote();
 
     // TEMP for testing ---------------
-    public static float maxAmpMargin = 0.7f; // 0.7 means notes highest is within 30% of songs overall highest 
+    public static float absMaxAmplWeight = 0.95f; // 0.7 means notes highest is within 30% of songs highest 
+    public static float relMaxAmplWeight = 0.3f; // ^
+    public static float minPrevPercent = 0.5f; // 0.3 means previous notes must reach 30% lower amplitudes 
     // TEMP for testing ---------------
 
 
@@ -92,7 +94,12 @@ public class Note {
         // returns (total, start);
         return (absoluteStartIndex, totalFreqCount);
     }
-    public (float, float) compareNotes(Note other) {
+    /// <summary>
+    /// Compare two notes properties
+    /// </summary>
+    /// <param name="other"></param>
+    /// <returns>(MaxAmplitude, AverageAmplitude)</returns>
+    public (float max, float avg) compareNotes(Note other) {
         // returns this.~ - other.~
         return (maxAmplitude - other.maxAmplitude, getAvgAmplitude() - other.getAvgAmplitude());
     }
@@ -105,25 +112,42 @@ public class Note {
         // test against neighboring notes: there could be multiple neigboring notes played but most of the time its just overflow
         // test against the last time a note on this lane was played ?? might not be needed
         // compare with the two neighbors
-        if (containsRelHighAmp()) {
+
+        //if (containsRelHighAmp() && containsAbsHighAmp() && onePrevLow()) {
+
+        // this line immediatly ensures that there will never be 2 notes next to eachother (most of the time its just overflow from a different note)
+        //* in the future I might want to make this percentage based as well. there could be 2 notes right next to eachother
+        if (lowNeighbor.maxAmplitude > maxAmplitude || highNeighbor.maxAmplitude > maxAmplitude) return;
+
+        if (onePrevLow() && containsAbsHighAmp()) {
             isNoteActive = true;
             return;
         }
         isNoteActive = false;
     }
-    public bool containsAbsHighAmp() {
+    private bool containsAbsHighAmp() {
         // does this note contain an amplitude close to the max amp in the whole song.
-        if (absNormalAmplitude(maxAmplitude) + maxAmpMargin >= 1) {
+        if (absNormalAmplitude(maxAmplitude) + absMaxAmplWeight >= 1) {
             isNoteActive = true;
             return true;
         }
         return false;
     }
-    public bool containsRelHighAmp() {
+    private bool containsRelHighAmp() {
         // does this note contain an amplitude close to the max amp in the whole song.
-        if (relNormalAmplitude(maxAmplitude) + maxAmpMargin >= 1) {
+        if (relNormalAmplitude(maxAmplitude) + relMaxAmplWeight >= 1) {
             isNoteActive = true;
             return true;
+        }
+        return false;
+    }
+    private bool onePrevLow() {
+        foreach (Note prev in bufferedNotes) {
+            float thisVsPrev = compareNotes(prev).avg;
+            float percentage = prev.getAvgAmplitude() / getAvgAmplitude(); // prev is x% of this
+            if (percentage <= minPrevPercent) { // prev max is less than 50% of current
+                return true;
+            }
         }
         return false;
     }
@@ -138,7 +162,7 @@ public class Note {
     public void drawNoteFull(ref Texture2D tex, float currentAlpha) {
         if (totalFreqCount <= 0) return;
         for (int y = absoluteStartIndex; y < absoluteStartIndex + totalFreqCount; y++) {
-            float alt = noteNum % 2 == 1 ? 0.25f : 0f;
+            float alt = noteNum % 2 == 1 ? 0.5f : 0f;
             for (int x = 0; x < tex.width; x++) {
                 Color d = tex.GetPixel(x,y);
                 d.a = currentAlpha - alt;
@@ -150,7 +174,16 @@ public class Note {
         // draw the note based on its Active modifier.
         if (!isActive()) return;
 
-        Color c = Color.green;
+        drawNote(ref tex, x, Color.green);
+    }
+
+    /// <summary>
+    /// WARNING: Use with understanding, if you draw a note with a specified color it will not check if its active, it will just draw
+    /// </summary>
+    /// <param name="tex"></param>
+    /// <param name="x"></param>
+    /// <param name="c"></param>
+    public void drawNote(ref Texture2D tex, int x, Color c) {
         for (int y = absoluteStartIndex; y < absoluteStartIndex + totalFreqCount; y++) {
             tex.SetPixel(x,y,c);
         }

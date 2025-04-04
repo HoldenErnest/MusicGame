@@ -52,7 +52,7 @@ public class SpectrogramGen : MonoBehaviour
             float amplitude = data[i] / NoteComputation.maxFrequency;
             amplitude = Mathf.Pow(amplitude, 0.2f); // increase the brightness of the color
 
-            // TODO: interpolate amp to bark scale
+            // TODO: interpolate amplitude to bark scale for "perceived loudness"
 
             Color c = colorFromAmp2(amplitude);
 
@@ -65,6 +65,15 @@ public class SpectrogramGen : MonoBehaviour
     }
     public void drawCurrentNotes() {
         NoteComputation.drawCurrentNotes(ref texture, currentLine);
+    }
+    /// <summary>
+    /// Use the bark scale to interpolate a new "loudness" instead of comparing raw amplitude.
+    /// </summary>
+    /// <param name="frequency"></param>
+    /// <param name="amplitude"></param>
+    private float getLoudness(int frequency, float amplitude) {
+        // TO DO LATER
+        return 0.0f;
     }
 
     private void postProcessTexture() { // run calculations on the result / after touchups

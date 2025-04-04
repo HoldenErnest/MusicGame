@@ -77,6 +77,7 @@ private void OnAudioFilterRead(float[] data, int channels) {
 
 .
 ### Note activating algorithm ---------------
+* [Some inspirational research](https://pdf.sciencedirectassets.com/280203/1-s2.0-S1877050912X00061/1-s2.0-S1877050912006424/main.pdf?X-Amz-Security-Token=IQoJb3JpZ2luX2VjEIz%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLWVhc3QtMSJGMEQCIHFKGmB7qPDHPIVFJo3133c%2FnSgWhvW%2BHYDK0FAfLZtUAiA1V4pAqVeW7JTm%2B6Q1eV6dytzPhypjtnVBNVRSJOPKlCq8BQj1%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F8BEAUaDDA1OTAwMzU0Njg2NSIMhHCt%2FOdf%2F65MgQe2KpAF%2BulUdicUeB94XKNKzoedaPnhMvICLhMbriWLCn4%2FoO0X951%2FuqM9z3H%2BaKNzOzUhw2e70ZcPq6vXHrDCFIir42OL6pa%2B1KLdvJaRCCIUHPuto5A4rSvomB38Z2Yuussmh78SSbvPN3srITw6fE8EMREl2%2Fmu4pRLRhK4bI%2F6ohMZum8RjwU0G9PvLNllXvfpv1FrrHBIVMKgyCNLMpcDjE2sxpMIDCOkKA7aAO%2FME1I6QvN09XRdZKXUI3AK5fOEIONnqptgfsWRK7Z3VEcttzRTqAZ4TdpjrmrLY3MyiFNXdrprU%2BXD3PXUPmfR%2BYNxMwy59J%2Fu9Ll2MAdGYca5WMiMDIMWZEITPRsnEtSKdjcc5yEAbTOpn%2Ba8hxC5qbKwUuOTS9hvPf4CZK4%2Bd9MMNgojtac2Gw2w0zXkJ4vVg14wxfOJEJywTslTU8yEW1EmMoZD8JwaTJm63TitkHk3HJtzZyMvKeprdOCFe1BoxGHv7rk8zK4aCN7bcL3svYDxIKAfJkOcF36t%2Bqs%2Bud%2BhKiYm0p1fnR1Qh9zmKDGbwP8GI9PIIJ8M25D%2FRvxgeUJT7ndZoCV3VTj4m4u6OPlNIm3hDn%2FJSU1x%2BU80AcmX5rrwZ5MqtY4CVoG3VN32Gixko6EMrKU721e0RaPqGXCuN%2BembKlu3lD%2FKkVqQgMLjd8yp6ZF1y8H2zL%2F3Hyis24Nmun8gHNkDMVXwnorE5nm%2FwncFJJbwMI9Uzqm%2FFXMdlJ06NeF0lZ2LwlncpUr22z5q44%2FQOuFvg7ZFu8W31N%2Broj27q9tomUlt%2F54B0WaZFCmXm8R5rs4as6WlvjlQ4w9coZsze8JkIVX1HklADDqs9nrE%2FUN6q7284H%2FtEmTuxAwjdO7vwY6sgE0kONVF2fpWHtEzMKzZaux6gl4vpgVED1OzzjJ3J%2FgsH26ZcSqEEBSfmjjZmvKSJtjjdfej3N%2BW5SUsNxnfJLQ2LjiQ0YQjDICx9eCcA4CjXT69nbN%2F4okrawRzr19bQvH3%2F1Ep9t%2B6NcWvceeKmJXmGF%2F7t8%2BJ5LRJ5jctspJ%2BkThKqrb4DcWosrgVwE%2B8We%2F6gsOlALtz%2FixKHy5OJfHepn2Mw1bgi4j%2BddTZvL46MPs&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20250403T203130Z&X-Amz-SignedHeaders=host&X-Amz-Expires=300&X-Amz-Credential=ASIAQ3PHCVTYV4DCNLOD%2F20250403%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Signature=bb89ddb1a8eff6634a93fe601714bef89f704c26bccbdb35f6c707f64f94219e&hash=3df6565f5949c209327398560b54f28a7c7c526462fedaa8275fdf0283802f59&host=68042c943591013ac2b2430a89b270f6af2c76d8dfd086a07176afe7c76c2c61&pii=S1877050912006424&tid=spdf-8b3fc122-6053-45f4-8acb-a2580f9a8d0b&sid=dbac595d3de10148c95b2e34934491b098a9gxrqa&type=client&tsoh=d3d3LnNjaWVuY2VkaXJlY3QuY29t&rh=d3d3LnNjaWVuY2VkaXJlY3QuY29t&ua=0f15575101025755535501&rr=92ab5473ed765113&cc=us)
 * interpolate the data to the [Bark scale](https://en.wikipedia.org/wiki/Bark_scale)
 
 #### Background Note:  (maybe a bass (loud and there but not as prevelant to what we percieve))
@@ -108,4 +109,12 @@ private void OnAudioFilterRead(float[] data, int channels) {
 
 #### Note seperation on the spectrogram
  ![Note Seperation](./Images/Theory/noteSeperation.png)
-![Note Seperation working](./Images/Theory/noteSeperation2.png)
+ ![Note Seperation working](./Images/Theory/noteSeperation2.png)
+
+#### Note distinction:
+ * You can find notes by crossing multiple tests
+
+**Note Beginnings**
+ ![note beginnings](./Images/Theory/noteBeginExample.png)
+**Note Beginnings + High Amplitude**
+ ![note Highest](./Images/Theory/Note%20begin%20X%20highestAmp.png)
