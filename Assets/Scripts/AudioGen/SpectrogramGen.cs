@@ -26,17 +26,11 @@ public class SpectrogramGen : MonoBehaviour
     // START DRAWABLE functions
     public void drawLine(ref float[] data) {
         // draws a single line of the spectrogram representing a moment in time
-        if (texture == null) resetTexture(data.Length/2);
+        if (texture == null) resetTexture(NoteComputation.totalFreqs);
         if (endofTexture) return;
 
-        NoteComputation.currentMaxFreq = 0f;
         drawCurrentLine(ref data);
 
-        // CORE COMPUTATIONS -- this should be moved later, not in the scope of drawing
-        NoteComputation.updateOctaves(ref data);
-        // CORE COMPUTATIONS -- this should be moved later
-
-        
         drawCurrentNotes();
 
         currentLine++;
@@ -57,9 +51,6 @@ public class SpectrogramGen : MonoBehaviour
             Color c = colorFromAmp2(amplitude);
 
             texture.SetPixel(currentLine, i, c);
-            
-            if (data[i] > NoteComputation.maxFrequency) NoteComputation.maxFrequency = data[i];
-            if (data[i] > NoteComputation.currentMaxFreq) NoteComputation.currentMaxFreq = data[i];
 
         }
     }

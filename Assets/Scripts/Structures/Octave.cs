@@ -58,7 +58,7 @@ public class Octave {
                 continue;
             }
 
-            notes[i] = new Note(i, data.Skip(lowNoteIndex).Take(totalFreqs), lowNoteIndex);
+            notes[i] = new Note(i, ocNum, data.Skip(lowNoteIndex).Take(totalFreqs), lowNoteIndex);
         }
     }
 
@@ -123,6 +123,19 @@ public class Octave {
         if (freq <= 20) return 0;
         // the whole array goes from 20-20k
         return (int)Math.Floor((freq-20)/(19980f / dataLen));
+    }
+    public int getAbsoluteEndIndex() {
+        return absoluteEndIndex;
+    }
+    public int getAbsoluteStartIndex() {
+        return absoluteStartIndex;
+    }
+    public void getActiveNoteData(ref List<Note> noteData) {
+        foreach (Note n in notes) {
+            if (n.isActive()) {
+                noteData.Add(n);
+            }
+        }
     }
 
 

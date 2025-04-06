@@ -72,7 +72,7 @@ public class MusicInfo : MonoBehaviour {
             if (index == -1) continue;
             SpriteRenderer sr = scales[index].GetComponent<SpriteRenderer>();
             float val = 1;//(totalFreqPeakSamples - i * 1.0f) / totalFreqPeakSamples;
-            float freq = MusicManager.frequencyFromScaleIndex(index);
+            float freq = 5f;//MusicManager.frequencyFromScaleIndex(index);
             if (freq >= 2000 && freq <= 5000) {
                 sr.color = new Color(0, val,val);
             }

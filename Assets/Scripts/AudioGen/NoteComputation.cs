@@ -3,6 +3,7 @@
 
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.ShaderGraph;
 using UnityEngine;
 
 public static class NoteComputation {
@@ -12,17 +13,28 @@ public static class NoteComputation {
     public static float maxFrequency = 0.05f;
     public static float currentMaxFreq = 0f;
 
+    public static int totalFreqs = -1;
+
     public static void init() {
         for (int i = 0; i < 9; i++) {
             octaves[i] = Octave.nullOctave;
         }
     }
-
+    private static void initOctaveCalc(ref float[] data) {
+        currentMaxFreq = 0f;
+        for (int i = 0; i < totalFreqs; i++) {
+            if (data[i] > maxFrequency) maxFrequency = data[i]; 
+            if (data[i] > currentMaxFreq) currentMaxFreq = data[i];
+        }
+    }
     public static void updateOctaves(ref float[] data) { // update the current octaves, push the previous one to the queue
-
+        initOctaveCalc(ref data);
         if (octaves[0].isNull()) {
             for (int i = 0; i < 9; i++) {
                 octaves[i] = new Octave(i, ref data);
+                if (i == 8){ //update max index
+                    totalFreqs = octaves[i].getAbsoluteEndIndex()+1;
+                }
             }
         } else {
             for (int i = 0; i < 9; i++) {
@@ -44,6 +56,14 @@ public static class NoteComputation {
             }
 
         }
+    }
+
+    public static List<Note> getActiveNoteData() {
+        List<Note> noteData = new List<Note>();
+        foreach (Octave oc in octaves) {
+            oc.getActiveNoteData(ref noteData);
+        }
+        return noteData;
     }
 
 

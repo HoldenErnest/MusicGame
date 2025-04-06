@@ -12,6 +12,7 @@ using UnityEngine;
 [System.Serializable]
 public class Note {
     private int noteNum = 0; // A B C D E F G (0-11)  WITH # and b
+    private int ocNum = 0;
     private float maxAmplitude = 0;
     private float totalAmplitude = 0;
     private int totalFreqCount = 0;
@@ -42,8 +43,9 @@ public class Note {
         processPrevNote(prevNote);
         bufferPreviousNote(prevNote);
     }
-    public Note(int noteNumber, IEnumerable<float> frequencyRange, int absoluteStartIndex) {
+    public Note(int noteNumber, int octaveNum, IEnumerable<float> frequencyRange, int absoluteStartIndex) {
         noteNum = noteNumber;
+        ocNum = octaveNum;
         this.absoluteStartIndex = absoluteStartIndex;
         updateNote(frequencyRange);
     }
@@ -78,10 +80,17 @@ public class Note {
     private void processPrevNote(Note prev) {
         if (prev == null || prev.isNull()) return;
         setNoteNum(prev.getNoteNum());
+        setOctaveNumber(prev.getOctaveNumber());
         setFreqencyRange(prev.getFrequencyRange());
     }
     public int getNoteNum() {
         return noteNum;
+    }
+    public int getOctaveNumber() {
+        return ocNum;
+    }
+    public void setOctaveNumber(int on) {
+        ocNum = on;
     }
     public void setNoteNum(int nn) {
         noteNum = nn;
