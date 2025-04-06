@@ -13,8 +13,13 @@ To work out magic numbers and make sure its all working properly I construct an 
 
 ## Audio Analysis
 Fourier Transformation (FFT)
+
  <img src="./Images/freqDomain.png" height=200px>
+ 
 Spectrogram generation
+
  <img src="./Images/Theory/specNotes.png" height=200px>
+ 
  Note Differentiation
+ 
  <img src="./Images/Theory/noteBeginExample.png" height=200px>
