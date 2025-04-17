@@ -8,8 +8,8 @@ public class PlayableTileManager : MonoBehaviour {
 
     public GameObject refTile;
 
-    public readonly int totalTiles = 12;
-    private GameObject[] tiles;
+    public static readonly int totalTiles = 12;
+    public static GameObject[] tiles;
 
     private (float left, float width, float bottom, float height) playarea;
 
