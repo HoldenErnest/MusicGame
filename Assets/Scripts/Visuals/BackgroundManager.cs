@@ -12,6 +12,8 @@ public class BackgroundManager : MonoBehaviour
     private int chosenIndex = 0;
     private bool up = true;
 
+    public Color a = Color.blue;
+    public Color b = Color.green;
     private Color col;
 
     // Start is called before the first frame update
@@ -57,8 +59,7 @@ public class BackgroundManager : MonoBehaviour
             }
         }
     }
-    private Color a = Color.blue;
-    private Color b = Color.green;
+    
     private float colLerp = 0f;
     private bool colUp = true;
     private static float colorTransition = 0.005f;

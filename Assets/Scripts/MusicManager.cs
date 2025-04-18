@@ -30,6 +30,7 @@ public class MusicManager : MonoBehaviour {
     }
 
     void Update() {
+        if (Controller.gamePaused()) return;
         updateSpectrumData();
     }
 
@@ -72,5 +73,12 @@ public class MusicManager : MonoBehaviour {
     /// <param name="channels"></param>
     private void OnAudioFilterRead(float[] data, int channels) {
         // DO NOT USE, unless you want pcm data
+    }
+
+    public void updatePause() {
+        if (Controller.gamePaused())
+            audioSource.Pause();
+        else
+            audioSource.Play();
     }
 }
